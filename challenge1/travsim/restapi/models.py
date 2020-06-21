@@ -4,7 +4,7 @@ from django.db import models
 
 class Goods(models.Model):
   product = models.CharField(max_length=100)
-  price = models.IntegerField(help_text='Price')
+  price = models.PositiveIntegerField(help_text='Price')
 
   def __str__(self):
     return self.product

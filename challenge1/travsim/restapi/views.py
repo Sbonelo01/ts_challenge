@@ -4,45 +4,67 @@ from django.shortcuts import render
 
 from django.http import HttpResponse 
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics, mixins
 from .models import Goods
 from .serializers import GoodsSerializer
 
-class Goods(APIView):
-
-  def get_availible(self, request, format=None):
-    goods = Goods.objects.filter(price <= 20)
-    serializer = GoodsSerializer(goods, many=True)
+@api_view(['GET', 'POST'])
+def get_availible(request, format=None):
+  """
+  List all goods with the exception of goods with the price of more than 20
+  """
+  if request.method == 'GET':
+    goods = Goods.objects.filter('price' <= 20)
+    serializer = GoodsSerializer(goods,context={'request': request}, many=True)
     return Response(serializer.data) #Return JSON
-  
-  def set_limit(self, request, format=None):
-    serializer = GoodsSerializer(data=request.DATA) # This is similar to Request.POST
+  elif request.method == 'POST':
+    serializer = GoodsSerializer(data=request.data)
     if serializer.is_valid():
       serializer.save()
-      data = JSONParser().parse(stream)
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET', 'PUT'])
+def good_detail(request, pk):
+  """
+  Retrieve, update goods instance.
+  """
+  try:
+    good = Goods.objects.get(pk=pk)
+  except Goods.DoesNotExist:
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
-class GoodsDetail(APIView):
+  if request.method == 'GET':
+    serializer = ProductSerializer(good, context={'request': request})
+    return Response(serializer.data)
 
-  def get_object(self, pk):
-    try:
-      return Goods.objects.get(pk=pk)
-    except Goods.DoesNotExist:
-      raise Http404  
-
-  def get_availible(self, request, format=None):
-    goods = self.get_object(pk)
-    goods = GoodsSerializer(goods)
-    return Response(goods.data) 
-
-  def set_limit(self, request, pk, format=None):
-    goods = self.get_object(pk)
-    serializer = GoodsSerializer(goods, data=request.DATA)
+  elif request.method == 'PUT':
+    serializer = GoodsSerializer(product, data=request.data,context={'request': request})
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
-    #return response(serializer.errors.status=status.HTTP_400_BAD_REQUEST)    
+      serializer.save()
+      return Response(serializer.data)
+  return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)      
+
+# class GoodsDetail(APIView):
+
+#   def get_object(self, pk):
+#     try:
+#       return Goods.objects.get(pk=pk)
+#     except Goods.DoesNotExist:
+#       raise Http404  
+
+#   def get_availible(self, request, format=None):
+#     goods = self.get_object(pk)
+#     goods = GoodsSerializer(goods)
+#     return Response(goods.data) 
+
+#   def set_limit(self, request, pk, format=None):
+#     goods = self.get_object(pk)
+#     serializer = GoodsSerializer(goods, data=request.DATA)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+#     #return response(serializer.errors.status=status.HTTP_400_BAD_REQUEST)    

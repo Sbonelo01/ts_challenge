@@ -22,16 +22,11 @@ from restapi import views
 admin.autodiscover()
 
 # urlpatterns = [
-#   path("admin/", admin.site.urls),
-#   path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-#   # path("Goods/", include("Goods.urls", namespace="goods")),
-#   # path("Goods/", include("GoodsDetail.urls", namespace="goods_details")),
-#   path(r'^Goods/, views.Goods.as_view()),
-#   path(r'^Goods/(?P<pk>[0-9]+)/$', views.GoodsDetail.as_view()),
-# ]
+#   path("admin/", admin.site.ur
 
 urlpatterns = [
-  url(r'^admin/', include(admin.site.urls)),
-  url(r'^api-auth/', include('rest_framework', namespace='rest_framework')),
-  url(r'^goods/', views.Goods.as_view()),
-  url(r'^goods/(?P<pk>[0-9]+)/$', views.GoodsDetail.as_view())]
+  url(r'^admin/', admin.site.urls),
+  #url(r'^api-auth/', rest_framework', namespace='rest_framework'),
+  url(r'^goods/', views.get_availible),
+  url(r'^goods/(?P<pk>[0-9]+)/$', views.good_detail),
+]
