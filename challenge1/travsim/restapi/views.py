@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, generics, mixins
 from .models import Goods
+from django.db.models import Max
 from .serializers import GoodsSerializer
 
 @api_view(['GET', 'POST'])
@@ -16,7 +17,8 @@ def get_availible(request, format=None):
   List all goods with the exception of goods with the price of more than 20
   """
   if request.method == 'GET':
-    goods = Goods.objects.filter('price' <= 20)
+    # Models sets the max price to 20
+    goods = Goods.objects.aggregate(Max('price'))
     serializer = GoodsSerializer(goods,context={'request': request}, many=True)
     return Response(serializer.data) #Return JSON
   elif request.method == 'POST':
