@@ -14,4 +14,7 @@ Since you have created the superuser, ideally to test out the api, user curl on 
 ```curl -X POST http://127.0.0.1:8000/goods/ -d '{"product":"Chocolate", "price":"15"}' -H "Content-Type: application/json"```
 and ```curl http://127.0.0.1:8000/goods``` to get the data
 
+
 The API code is found in ```ts_challenge/challenge1/travsim/resapi/views.py```
+
+Had I been allocated more time, I would have included templates so that testing out the API would be easier, instead of having to use ```curl``` on the terminal.
